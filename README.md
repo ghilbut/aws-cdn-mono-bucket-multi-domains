@@ -1,0 +1,1 @@
+# aws-cdn-mono-bucket-multi-domains
