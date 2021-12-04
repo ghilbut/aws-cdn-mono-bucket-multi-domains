@@ -5,7 +5,7 @@ on:
     branches:
       - feature/**
     paths:
-      - .github/workflows/ghilbut-ev1y-feature.yml
+      - .github/workflows/ghilbut-ev1y-preview.yml
       - spa-examples/vue.js/ev1y/public/**
       - spa-examples/vue.js/ev1y/src/**
       - spa-examples/vue.js/ev1y/test/**
