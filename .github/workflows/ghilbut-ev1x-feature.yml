@@ -5,19 +5,19 @@ on:
     branches:
       - feature/**
     paths:
-      - .github/workflows/ghilbut-ev1y-preview.yml
-      - spa-examples/vue.js/ev1y/public/**
-      - spa-examples/vue.js/ev1y/src/**
-      - spa-examples/vue.js/ev1y/test/**
-      - spa-examples/vue.js/ev1y/package.json
-      - spa-examples/vue.js/ev1y/tsconfig.json
-      - spa-examples/vue.js/ev1y/yarn.lock
+      - .github/workflows/ghilbut-ev1x-feature.yml
+      - spa-examples/vue.js/ev1x/public/**
+      - spa-examples/vue.js/ev1x/src/**
+      - spa-examples/vue.js/ev1x/test/**
+      - spa-examples/vue.js/ev1x/package.json
+      - spa-examples/vue.js/ev1x/tsconfig.json
+      - spa-examples/vue.js/ev1x/yarn.lock
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      WORKDIR: ./spa-examples/vue.js/ev1y
+      WORKDIR: ./spa-examples/vue.js/ev1x
 
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
         id: yarn-build
         run: |
           tee .env.local << EOF
-          BASE_URL=/y
+          BASE_URL=/x
           EOF
           yarn
           yarn build
@@ -56,6 +56,6 @@ jobs:
           HOST: ev1--${{ github.actor }}.p.ghilbut.com
         run: |
           aws s3 sync \
-            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/y \
+            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
             --delete
         working-directory: ${{ env.WORKDIR }}
