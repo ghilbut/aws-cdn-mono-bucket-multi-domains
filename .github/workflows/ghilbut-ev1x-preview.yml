@@ -1,17 +1,17 @@
-name: Preview for /vue.js/ev1
+name: Preview for /vue.js/ev1x
 
 on:
   push:
     branches:
       - feature/**
     paths:
-      - .github/workflows/ghilbut-ev1-preview.yml
-      - spa-examples/vue.js/ev1/public/**
-      - spa-examples/vue.js/ev1/src/**
-      - spa-examples/vue.js/ev1/test/**
-      - spa-examples/vue.js/ev1/package.json
-      - spa-examples/vue.js/ev1/tsconfig.json
-      - spa-examples/vue.js/ev1/yarn.lock
+      - .github/workflows/ghilbut-ev1x-preview.yml
+      - spa-examples/vue.js/ev1x/public/**
+      - spa-examples/vue.js/ev1x/src/**
+      - spa-examples/vue.js/ev1x/test/**
+      - spa-examples/vue.js/ev1x/package.json
+      - spa-examples/vue.js/ev1x/tsconfig.json
+      - spa-examples/vue.js/ev1x/yarn.lock
   pull_request:
     branches:
       - main
@@ -34,7 +34,7 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     env:
-      WORKDIR: ./spa-examples/vue.js/ev1
+      WORKDIR: ./spa-examples/vue.js/ev1x
 
     steps:
       - name: checkout
@@ -55,7 +55,7 @@ jobs:
         id: yarn-build
         run: |
           tee .env.local << EOF
-          VUE_APP_TEST=preview
+          BASE_URL=/x
           EOF
           yarn
           yarn build
@@ -78,11 +78,7 @@ jobs:
           HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
         run: |
           aws s3 sync \
-            s3://ghilbut-cdn-for-preview-virginia/${HOST}/x ./dist/x
-          aws s3 sync \
-            s3://ghilbut-cdn-for-preview-virginia/${HOST}/y ./dist/y
-          aws s3 sync \
-            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST} \
+            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
             --delete
         working-directory: ${{ env.WORKDIR }}
 
@@ -118,13 +114,13 @@ jobs:
           HOST: ${{ steps.host.outputs.value }}
         run: |
           aws s3 ls \
-              s3://ghilbut-cdn-for-preview-virginia/${HOST}
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/x
 
       - name: show preview address on comment
         uses: mshick/add-pr-comment@v1
         with:
           message: |
-            :white_check_mark: Preview address is https://${{ steps.host.outputs.value }}
+            :white_check_mark: Preview address is https://${{ steps.host.outputs.value }}/x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - if: ${{ failure() }}
@@ -132,7 +128,7 @@ jobs:
         uses: mshick/add-pr-comment@v1
         with:
           message: |
-            :x: Preview address - https://${{ steps.host.outputs.value }} - does not exist
+            :x: Preview address - https://${{ steps.host.outputs.value }}/x - does not exist
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
   ##--------------------------------------------------------------
@@ -160,5 +156,5 @@ jobs:
           HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
         run: |
           aws s3 rm \
-              s3://ghilbut-cdn-for-preview-virginia/${HOST} \
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
               --recursive
