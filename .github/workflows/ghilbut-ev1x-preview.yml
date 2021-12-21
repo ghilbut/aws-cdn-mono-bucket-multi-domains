@@ -1,0 +1,159 @@
+name: Preview for /vue.js/ev1x
+
+on:
+  push:
+    branches:
+      - feature/**
+    paths:
+      - .github/workflows/ghilbut-ev1x-preview.yml
+      - spa-examples/vue.js/ev1x/public/**
+      - spa-examples/vue.js/ev1x/src/**
+      - spa-examples/vue.js/ev1x/test/**
+      - spa-examples/vue.js/ev1x/package.json
+      - spa-examples/vue.js/ev1x/tsconfig.json
+      - spa-examples/vue.js/ev1x/yarn.lock
+  pull_request:
+    branches:
+      - main
+      - develop
+      - feature/**
+      - chore/**
+    types:
+      - opened
+  delete:
+    branches:
+      - feature/**
+      - chore/**
+
+jobs:
+
+  ##--------------------------------------------------------------
+  ##  when commits are pushed, update preview environment
+
+  update:
+    runs-on: ubuntu-latest
+    env:
+      WORKDIR: ./spa-examples/vue.js/ev1x
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+
+      - name: cache node_module
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ env.WORKDIR }}/node_modules
+          key: ${{ format('{0}-yarn-{1}', runner.os, hashFiles(format('{0}/yarn.lock', env.WORKDIR))) }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: yarn build
+        id: yarn-build
+        run: |
+          tee .env.local << EOF
+          BASE_URL=/x
+          EOF
+          yarn
+          yarn build
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region:            us-east-1
+          aws-access-key-id:     ${{ secrets.GHILBUT_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.GHILBUT_AWS_SECRET_KEY }}
+
+      - name: get preview sha from branch name
+        id: sha
+        run: |
+          echo "::set-output name=value::$(md5sum<<<${{ github.ref }} | cut -c1-4)"
+
+      - name: deploy
+        env:
+          HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
+        run: |
+          aws s3 sync \
+            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
+            --delete
+        working-directory: ${{ env.WORKDIR }}
+
+  ##--------------------------------------------------------------
+  ##  when PR is opened, comment preview address
+
+  comment:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.GHILBUT_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.GHILBUT_AWS_SECRET_KEY }}
+
+      - name: get preview sha from branch name
+        id: sha
+        run: |
+          echo "::set-output name=value::$(md5sum<<<refs/heads/${{ github.head_ref }} | cut -c1-4)"
+
+      - name: get unique host name for preview
+        id: host
+        env:
+          HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
+        run: |
+          echo "::set-output name=value::${HOST}"
+
+      - name: check preview environment
+        env:
+          HOST: ${{ steps.host.outputs.value }}
+        run: |
+          aws s3 ls \
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/x
+
+      - name: show preview address on comment
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            :white_check_mark: Preview address is https://${{ steps.host.outputs.value }}/x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: ${{ failure() }}
+        name: alert preview does not exist
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            :x: Preview address - https://${{ steps.host.outputs.value }}/x - does not exist
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  ##--------------------------------------------------------------
+  ##  when branch is deleted, remove preview environment
+
+  delete:
+    if: ${{ github.event_name == 'delete' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.GHILBUT_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.GHILBUT_AWS_SECRET_KEY }}
+
+      - name: get preview sha from branch name
+        id: sha
+        run: |
+          echo "::set-output name=value::$(md5sum<<<refs/heads/${{ github.event.ref }} | cut -c1-4)"
+
+      - name: destroy preview
+        env:
+          HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
+        run: |
+          aws s3 rm \
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
+              --recursive
