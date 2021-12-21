@@ -144,3 +144,30 @@ jobs:
             :x: Preview address - https://${{ steps.host.outputs.value }}/y - does not exist
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+  ##--------------------------------------------------------------
+  ##  when branch is deleted, remove preview environment
+
+  delete:
+    if: ${{ github.event_name == 'delete' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.GHILBUT_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.GHILBUT_AWS_SECRET_KEY }}
+
+      - name: get preview sha from branch name
+        id: sha
+        run: |
+          echo "::set-output name=value::$(md5sum<<<refs/heads/${{ github.event.ref }} | cut -c1-4)"
+
+      - name: destroy preview
+        env:
+          HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
+        run: |
+          aws s3 rm \
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/y \
+              --recursive
