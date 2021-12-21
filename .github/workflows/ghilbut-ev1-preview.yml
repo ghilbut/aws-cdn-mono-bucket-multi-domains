@@ -1,4 +1,4 @@
-name: Deploy feature branch for personal environment
+name: Preview for /vue.js/ev1
 
 on:
   push:
