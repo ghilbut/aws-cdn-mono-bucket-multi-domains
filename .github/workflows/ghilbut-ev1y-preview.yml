@@ -1,16 +1,16 @@
-name: Preview for /vue.js/ev1x
+name: Preview for /vue.js/ex1y
 
 on:
   push:
     branches:
       - feature/**
     paths:
-      - .github/workflows/ghilbut-ev1x-preview.yml
-      - spa-examples/vue.js/ev1x/public/**
-      - spa-examples/vue.js/ev1x/src/**
-      - spa-examples/vue.js/ev1x/package.json
-      - spa-examples/vue.js/ev1x/tsconfig.json
-      - spa-examples/vue.js/ev1x/yarn.lock
+      - .github/workflows/ghilbut-ev1y-preview.yml
+      - spa-examples/vue.js/ev1y/public/**
+      - spa-examples/vue.js/ev1y/src/**
+      - spa-examples/vue.js/ev1y/package.json
+      - spa-examples/vue.js/ev1y/tsconfig.json
+      - spa-examples/vue.js/ev1y/yarn.lock
   pull_request:
     branches:
       - main
@@ -18,12 +18,12 @@ on:
       - feature/**
       - chore/**
     paths:
-      - .github/workflows/ghilbut-ev1x-preview.yml
-      - spa-examples/vue.js/ev1x/public/**
-      - spa-examples/vue.js/ev1x/src/**
-      - spa-examples/vue.js/ev1x/package.json
-      - spa-examples/vue.js/ev1x/tsconfig.json
-      - spa-examples/vue.js/ev1x/yarn.lock
+      - .github/workflows/ghilbut-ev1y-preview.yml
+      - spa-examples/vue.js/ev1y/public/**
+      - spa-examples/vue.js/ev1y/src/**
+      - spa-examples/vue.js/ev1y/package.json
+      - spa-examples/vue.js/ev1y/tsconfig.json
+      - spa-examples/vue.js/ev1y/yarn.lock
     types:
       - opened
   delete:
@@ -31,12 +31,12 @@ on:
       - feature/**
       - chore/**
     paths:
-      - .github/workflows/ghilbut-ev1x-preview.yml
-      - spa-examples/vue.js/ev1x/public/**
-      - spa-examples/vue.js/ev1x/src/**
-      - spa-examples/vue.js/ev1x/package.json
-      - spa-examples/vue.js/ev1x/tsconfig.json
-      - spa-examples/vue.js/ev1x/yarn.lock
+      - .github/workflows/ghilbut-ev1y-preview.yml
+      - spa-examples/vue.js/ev1y/public/**
+      - spa-examples/vue.js/ev1y/src/**
+      - spa-examples/vue.js/ev1y/package.json
+      - spa-examples/vue.js/ev1y/tsconfig.json
+      - spa-examples/vue.js/ev1y/yarn.lock
 
 jobs:
 
@@ -47,7 +47,7 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     env:
-      WORKDIR: ./spa-examples/vue.js/ev1x
+      WORKDIR: ./spa-examples/vue.js/ev1y
 
     steps:
       - name: checkout
@@ -68,7 +68,7 @@ jobs:
         id: yarn-build
         run: |
           tee .env.local << EOF
-          BASE_URL=/x
+          BASE_URL=/y
           EOF
           yarn
           yarn build
@@ -91,7 +91,7 @@ jobs:
           HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
         run: |
           aws s3 sync \
-            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
+            ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/y \
             --delete
         working-directory: ${{ env.WORKDIR }}
 
@@ -127,13 +127,13 @@ jobs:
           HOST: ${{ steps.host.outputs.value }}
         run: |
           aws s3 ls \
-              s3://ghilbut-cdn-for-preview-virginia/${HOST}/x
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/y
 
       - name: show preview address on comment
         uses: mshick/add-pr-comment@v1
         with:
           message: |
-            :white_check_mark: Preview address is https://${{ steps.host.outputs.value }}/x
+            :white_check_mark: Preview address is https://${{ steps.host.outputs.value }}/y
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - if: ${{ failure() }}
@@ -141,7 +141,7 @@ jobs:
         uses: mshick/add-pr-comment@v1
         with:
           message: |
-            :x: Preview address - https://${{ steps.host.outputs.value }}/x - does not exist
+            :x: Preview address - https://${{ steps.host.outputs.value }}/y - does not exist
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
   ##--------------------------------------------------------------
@@ -169,5 +169,5 @@ jobs:
           HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
         run: |
           aws s3 rm \
-              s3://ghilbut-cdn-for-preview-virginia/${HOST}/x \
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/y \
               --recursive
