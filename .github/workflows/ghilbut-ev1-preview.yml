@@ -1,11 +1,11 @@
-name: Deploy feature branch for personal environment
+name: Preview for /vue.js/ev1
 
 on:
   push:
     branches:
       - feature/**
     paths:
-      - .github/workflows/ghilbut-ev1-feature.yml
+      - .github/workflows/ghilbut-ev1-preview.yml
       - spa-examples/vue.js/ev1/public/**
       - spa-examples/vue.js/ev1/src/**
       - spa-examples/vue.js/ev1/test/**
