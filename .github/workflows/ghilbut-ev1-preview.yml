@@ -8,7 +8,6 @@ on:
       - .github/workflows/ghilbut-ev1-preview.yml
       - spa-examples/vue.js/ev1/public/**
       - spa-examples/vue.js/ev1/src/**
-      - spa-examples/vue.js/ev1/test/**
       - spa-examples/vue.js/ev1/package.json
       - spa-examples/vue.js/ev1/tsconfig.json
       - spa-examples/vue.js/ev1/yarn.lock
@@ -19,13 +18,25 @@ on:
       - feature/**
       - chore/**
     paths:
-      - spa-examples/vue.js/ev1/**
+      - .github/workflows/ghilbut-ev1-preview.yml
+      - spa-examples/vue.js/ev1/public/**
+      - spa-examples/vue.js/ev1/src/**
+      - spa-examples/vue.js/ev1/package.json
+      - spa-examples/vue.js/ev1/tsconfig.json
+      - spa-examples/vue.js/ev1/yarn.lock
     types:
       - opened
   delete:
     branches:
       - feature/**
       - chore/**
+    paths:
+      - .github/workflows/ghilbut-ev1-preview.yml
+      - spa-examples/vue.js/ev1/public/**
+      - spa-examples/vue.js/ev1/src/**
+      - spa-examples/vue.js/ev1/package.json
+      - spa-examples/vue.js/ev1/tsconfig.json
+      - spa-examples/vue.js/ev1/yarn.lock
 
 jobs:
 
