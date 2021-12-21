@@ -18,6 +18,8 @@ on:
       - develop
       - feature/**
       - chore/**
+    paths:
+      - spa-examples/vue.js/ev1y/**
     types:
       - opened
   delete:
@@ -81,3 +83,53 @@ jobs:
             ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST}/y \
             --delete
         working-directory: ${{ env.WORKDIR }}
+
+  ##--------------------------------------------------------------
+  ##  when PR is opened, comment preview address
+
+  comment:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.GHILBUT_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.GHILBUT_AWS_SECRET_KEY }}
+
+      - name: get preview sha from branch name
+        id: sha
+        run: |
+          echo "::set-output name=value::$(md5sum<<<refs/heads/${{ github.head_ref }} | cut -c1-4)"
+
+      - name: get unique host name for preview
+        id: host
+        env:
+          HOST: ev1--${{ steps.sha.outputs.value }}.p.ghilbut.com
+        run: |
+          echo "::set-output name=value::${HOST}"
+
+      - name: check preview environment
+        env:
+          HOST: ${{ steps.host.outputs.value }}
+        run: |
+          aws s3 ls \
+              s3://ghilbut-cdn-for-preview-virginia/${HOST}/y
+
+      - name: show preview address on comment
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            :white_check_mark: Preview address is https://${{ steps.host.outputs.value }}/y
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: ${{ failure() }}
+        name: alert preview does not exist
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            :x: Preview address - https://${{ steps.host.outputs.value }}/y - does not exist
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+

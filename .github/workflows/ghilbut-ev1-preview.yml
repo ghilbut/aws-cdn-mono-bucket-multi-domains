@@ -18,6 +18,8 @@ on:
       - develop
       - feature/**
       - chore/**
+    paths:
+      - spa-examples/vue.js/ev1/**
     types:
       - opened
   delete:
