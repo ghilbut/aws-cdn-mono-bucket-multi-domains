@@ -31,6 +31,7 @@ jobs:
   ##  when commits are pushed, update preview environment
 
   update:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     env:
       WORKDIR: ./spa-examples/vue.js/ev1x
