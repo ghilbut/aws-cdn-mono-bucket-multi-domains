@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/**
+      - chore/**
     paths:
       - .github/workflows/ghilbut-ev1y-preview.yml
       - spa-examples/vue.js/ev1y/public/**
@@ -13,7 +14,6 @@ on:
       - spa-examples/vue.js/ev1y/yarn.lock
   pull_request:
     branches:
-      - main
       - develop
       - feature/**
       - chore/**
