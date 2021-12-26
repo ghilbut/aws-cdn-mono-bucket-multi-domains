@@ -19,6 +19,7 @@ terraform {
 ##  module
 
 module cdn-for-preview {
+  # source = "github.com/ghilbut/aws-cdn-mono-bucket-multi-domains//terraform/module?ref=v1.0"
   source = "../module"
 
   # aws provider

@@ -36,6 +36,7 @@ CDN은 다음과 같은 두 가지 형태의 프론트엔드 환경을 지원해
   * 호출되는 도메인과 경로에 있는 파일을 서비스합니다.
   * 파일이 없다면 SPA의 `index.html`을 서비스하여 동적 route 페이지를 서비스합니다.
   * SPA의 동적 페이지 경로에 해당하지 않는다면, SPA가 `404` 페이지를 서비스합니다.
+  * Nested Multi SPA를 지원합니다.
 
 ## 3. 개념
 
@@ -51,9 +52,7 @@ CDN은 다음과 같은 두 가지 형태의 프론트엔드 환경을 지원해
 
 ## 4. 사용방법
 
-CDN 구성은 [Terraform](https://www.terraform.io/)으로 제공됩니다.
-
-[ghilbut.com 샘플](./terraform/ghilbut.com/main.tf#L21)을 확인하세요.
+CDN 구성은 [Terraform](https://www.terraform.io/) Module로 제공됩니다. [ghilbut.com 샘플](./terraform/ghilbut.com/main.tf#L21)을 참고하세요.
 
 ## 5. 성능
 
@@ -67,6 +66,7 @@ CDN 구성은 [Terraform](https://www.terraform.io/)으로 제공됩니다.
 
 따라서 브라우저에서 페이지를 여는 최초의 `index.html` 탐색 시간을 제외하면 O(1) 탐색을 기대합니다.
 
+[main.py / Line 23](./terraform/module/lambda/main.py#L23)
 ```python
 def find_key(host, path):
     base = os.path.join(host, path)
@@ -123,7 +123,7 @@ Global Edge 캐싱이 필요할 경우 `CloudFront`는 좋은 선택입니다. �
 
 ## Process
 
-아래 CI/CD 절차는 [Vercel](https://vercel.com/)을 대체하기 위하여 구성되었습니다. 
+* 아래 CI/CD 절차는 [Vercel](https://vercel.com/)을 대체하기 위하여 구성되었습니다. 
 
 ### Step 1. Preview 환경의 자동 생성 및 업데이트
 
@@ -151,4 +151,4 @@ PR은 언제나 두 브랜치 사이에 차이점이 있어야만 만들 수 있
 
 ## 확장 및 변형
 
-이 저장소에서 Github Actions를 이용해 소개하는 CI/CD는 예시일 뿐입니다. S3에 호스트 이름을 Prefix로 지정하여 파일을 업로드 할 수만 있다면 어떤 향태로도 응용 및 확장이 가능합니다.
+이 저장소에서 Github Actions를 이용해 소개하는 CI/CD는 예시일 뿐입니다. S3에 호스트 이름을 Prefix로 지정하여 파일을 업로드 할 수만 있다면 어떤 형태로도 응용 및 확장이 가능합니다.
