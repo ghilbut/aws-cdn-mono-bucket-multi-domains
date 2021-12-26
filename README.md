@@ -15,8 +15,6 @@
    └ module       ## terraform module for CDN environment
 ```
 
-# CDN with Mono S3 Bucket
-
 ## 1. 컨셉
 
 ![Architecture](./images/architecture.drawio.png)
@@ -138,15 +136,13 @@ Global Edge 캐싱이 필요할 경우 `CloudFront`는 좋은 선택입니다. �
 
 ---
 
-# CI/CD with Github Actions
+## Extra. CI/CD with Github Actions
 
 * **Example: [.github/workflows/ghilbut-ev1-preview.yml](./.github/workflows/ghilbut-ev1-preview.yml)**
 
 우리는 제품을 개발하는 과정에서 각각의 기능들에 대하여 PO/BO 및 디자이너들과 개발 과정을 직접 눈으로 확인하면서 점진적인 수정을 해야 할 때가 있습니다. 대부분의 경우 한자리에 모여 개발자의 랩탑(localhost)에서 구동되는 화면을 보면서 의견을 교환합니다. 이러한 방법은 PO/BO와 디자이너들이 현재의 작업 내용에 대하여 충분히 검토할 수 있는 여유를 제공하지 못합니다. 따라서 개별 feature 브랜치에 대해서도 온라인에 게시되는 Preview 환경이 필요할 수 있습니다. 이 저장소는 이와 같은 환경을 지원하는 Github Actions 샘플을 포함하고 있습니다.
 
 지금 소개하는 내용은 `CDN with Mono S3 Bucket`의 특성을 이용하는 것이므로 원리만 동일하다면 CI/CD에 꼭 Github Actions를 사용할 필요는 없습니다. 그러나, 반드시 S3 Bucket에 와일드카드 도메인을 연결해야 합니다.
-
-## Process
 
 * 아래 CI/CD 절차는 [Vercel](https://vercel.com/)을 대체하기 위한 샘플입니다. 
 
@@ -174,6 +170,6 @@ PR은 언제나 두 브랜치 사이에 차이점이 있어야만 만들 수 있
 
 브랜치를 삭제한다면, 자동으로 S3에서 Preview 환경을 제거합니다.
 
-## 확장 및 변형
+### 확장 및 변형
 
 이 저장소에서 Github Actions를 이용해 소개하는 CI/CD는 예시일 뿐입니다. S3에 호스트 이름을 Prefix로 지정하여 파일을 업로드 할 수만 있다면 어떤 형태로도 응용 및 확장이 가능합니다.
