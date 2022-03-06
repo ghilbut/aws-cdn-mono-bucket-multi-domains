@@ -14,9 +14,8 @@ on:
       - spa-examples/vue.js/ev1y/yarn.lock
   pull_request:
     branches:
+    ## this is target branch, not source branch
       - develop
-      - feature/**
-      - chore/**
     paths:
       - .github/workflows/ghilbut-ev1y-preview.yml
       - spa-examples/vue.js/ev1y/public/**
@@ -27,6 +26,8 @@ on:
     types:
       - opened
   delete:
+  ##  Note: This event will only trigger a workflow run if the workflow file is on the default branch
+  ##    * https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#delete
     branches:
       - feature/**
       - chore/**
