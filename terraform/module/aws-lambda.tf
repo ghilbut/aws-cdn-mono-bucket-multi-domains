@@ -21,8 +21,8 @@ resource aws_lambda_function main {
   runtime = "python3.9"
 
   s3_bucket         = aws_s3_bucket.main.id
-  s3_key            = aws_s3_bucket_object.lambda.id
-  s3_object_version = aws_s3_bucket_object.lambda.version_id
+  s3_key            = aws_s3_object.lambda.id
+  s3_object_version = aws_s3_object.lambda.version_id
   source_code_hash  = filebase64sha256(data.archive_file.lambda.output_path)
 
   lifecycle {
@@ -87,7 +87,7 @@ resource aws_iam_role lambda {
   }
 }
 
-resource aws_s3_bucket_object lambda {
+resource aws_s3_object lambda {
   bucket = aws_s3_bucket.main.id
   key    = "lambda.zip"
   source = data.archive_file.lambda.output_path

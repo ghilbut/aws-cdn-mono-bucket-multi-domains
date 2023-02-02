@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.0.0"
+  required_version = "~> 1.3.6"
 
   ## https://www.terraform.io/docs/language/settings/backends/s3.html
   backend s3 {

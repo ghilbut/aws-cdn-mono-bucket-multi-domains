@@ -61,6 +61,16 @@ jobs:
           aws s3 sync \
             ./dist s3://ghilbut-cdn-for-preview-virginia/${HOST} \
             --delete
+          aws s3 cp \
+            s3://ghilbut-cdn-for-preview-virginia/${HOST} \
+            s3://ghilbut-cdn-for-preview-virginia/${HOST} \
+            --recursive \
+            --exclude "*" \
+            --include "index.html" \
+            --include "*/index.html" \
+            --metadata-directive REPLACE \
+            --cache-control max-age=0,must-revalidate,public \
+            --content-type "text/html; charset=utf-8"
         working-directory: ${{ env.WORKDIR }}
 
       - name: Deploy develop branch
